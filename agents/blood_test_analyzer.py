@@ -1,30 +1,28 @@
 from crewai import Agent
-import re
+from utilities.parser import parse_blood_test_report
+from utilities.data_processor import identify_abnormalities
+from sklearn.ensemble import IsolationForest
+import numpy as np
 
 class BloodTestAnalyzer(Agent):
-    def parse_blood_test(self, blood_test_report):
-        # Example of extracting information from a PDF using regex
-        results = {}
-        pattern = re.compile(r'(\w[\w\s]+?)\s+(\d+\.\d+)\s+\w+/\w+\s+\d+\.\d+\s+-\s+\d+\.\d+')
-        for match in pattern.finditer(blood_test_report):
-            test_name, result = match.groups()
-            results[test_name.strip()] = float(result)
-        return results
+    def __init__(self):
+        self.model = IsolationForest(contamination=0.1)
+        self.model.fit(self.load_training_data())
+
+    def load_training_data(self):
+        # Load historical blood test data for training the model
+        return np.array([[15.0, 45.0, 4.5], [14.0, 44.0, 4.6]])
+
+    def parse_blood_test(self, pdf_path):
+        return parse_blood_test_report(pdf_path)
 
     def identify_abnormalities(self, extracted_info):
-        # Define some reference intervals for simplicity
-        reference_intervals = {
-            "Hemoglobin": (13.00, 17.00),
-            "Packed Cell Volume (PCV)": (40.00, 50.00),
-            "RBC Count": (4.50, 5.50),
-            # Add other tests as needed
-        }
+        values = list(extracted_info.values())
+        is_anomaly = self.model.predict([values])[0]
         abnormalities = {}
-        for test, result in extracted_info.items():
-            if test in reference_intervals:
-                low, high = reference_intervals[test]
-                if result < low:
-                    abnormalities[test] = 'Low'
-                elif result > high:
-                    abnormalities[test] = 'High'
+        if is_anomaly == -1:
+            for test, value in extracted_info.items():
+                abnormalities[test] = 'Anomalous'
         return abnormalities
+
+blood_test_analyzer = BloodTestAnalyzer()
