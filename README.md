@@ -25,7 +25,7 @@ Virtual environment (optional but recommended)
 
 ## Installation
 1.  Clone the repository:
-      git clone https://github.com/your-username/blood-test-report-analysis.git
+      git clone https://github.com/nikhilltiwari/blood-test-report-analysis.git
       cd blood-test-report-analysis
 
 2.  Create and activate a virtual environment (optional):
