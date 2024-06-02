@@ -1,4 +1,5 @@
 import fitz  # PyMuPDF
+import re
 
 def parse_blood_test_report(pdf_path):
     # Open the PDF file
@@ -8,27 +9,37 @@ def parse_blood_test_report(pdf_path):
         page = document.load_page(page_num)
         text += page.get_text()
 
-    # Simple text parsing logic (can be improved)
-    extracted_info = {}
-    lines = text.split('\n')
-    for line in lines:
-        if ':' in line:
-            key, value = line.split(':', 1)
-            key = key.strip()
-            value = value.strip()
-            if value:
-                try:
-                    extracted_info[key] = float(value)
-                except ValueError:
-                    extracted_info[key] = value
-            else:
-                extracted_info[key] = None
+    # Define a list of important metrics to look for
+    important_metrics = {
+        "BUN/creatinine ratio": None,
+        "Hemoglobin": None,
+        "Cholesterol": None,
+        "Glucose": None,
+        "Triglycerides": None
+    }
 
-   
-    important_metrics = ["BUN/creatinine ratio", "Hemoglobin", "Cholesterol"]
-    refined_info = {k: v for k, v in extracted_info.items() if any(metric in k for metric in important_metrics)}
+    # Use regular expressions to match key metrics
+    patterns = {
+        "BUN/creatinine ratio": re.compile(r"BUN/creatinine ratio\s*[:\-]?\s*([\d\.]+)"),
+        "Hemoglobin": re.compile(r"Hemoglobin\s*[:\-]?\s*([\d\.]+)"),
+        "Cholesterol": re.compile(r"Cholesterol\s*[:\-]?\s*([\d\.]+)"),
+        "Glucose": re.compile(r"Glucose\s*[:\-]?\s*([\d\.]+)"),
+        "Triglycerides": re.compile(r"Triglycerides\s*[:\-]?\s*([\d\.]+)")
+    }
+
+    # Search text for matches
+    for metric, pattern in patterns.items():
+        match = pattern.search(text)
+        if match:
+            try:
+                important_metrics[metric] = float(match.group(1))
+            except ValueError:
+                important_metrics[metric] = None
+
+    # Remove None values
+    extracted_info = {k: v for k, v in important_metrics.items() if v is not None}
 
     # Log extracted information for debugging purposes
-    print("Extracted Info:", refined_info)
+    print("Extracted Info:", extracted_info)
 
-    return refined_info
+    return extracted_info
