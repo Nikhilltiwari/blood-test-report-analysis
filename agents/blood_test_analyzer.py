@@ -10,7 +10,7 @@ class BloodTestAnalyzer(Agent):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.model = IsolationForest(contamination=0.1)
+        object.__setattr__(self, 'model', IsolationForest(contamination=0.1))
 
     def parse_blood_test(self, pdf_path):
         extracted_info, numeric_values = parse_blood_test_report(pdf_path)
@@ -30,6 +30,7 @@ if __name__ == "__main__":
     extracted_info, numeric_values = blood_test_analyzer.parse_blood_test(pdf_path)
     print("Extracted Info:", extracted_info)
     print("Numeric Values:", numeric_values)
+
 
 
 
