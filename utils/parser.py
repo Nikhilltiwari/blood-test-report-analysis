@@ -1,14 +1,21 @@
 # utils/parser.py
+# utils/parser.py
 import re
+import fitz  # PyMuPDF
 from typing import Dict, Any
 
 def parse_blood_test_report(pdf_path: str) -> Dict[str, Any]:
     extracted_info = {}
     numeric_values = []
     
-    with open(pdf_path, 'r') as file:
-        lines = file.readlines()
+    # Open the PDF file
+    doc = fitz.open(pdf_path)
     
+    text = ""
+    for page in doc:
+        text += page.get_text()
+    
+    # Define test patterns
     test_patterns = {
         'Hemoglobin': r'Hemoglobin\s+(\d+\.\d+)\s+g/dL',
         'PCV': r'Packed Cell Volume \(PCV\)\s+(\d+\.\d+)\s+%',
@@ -32,20 +39,18 @@ def parse_blood_test_report(pdf_path: str) -> Dict[str, Any]:
         'Vitamin B12': r'VITAMIN\s+B12;\s+CYANOCOBALAMIN\s+(\d+\.\d+)\s+pg/mL',
     }
 
-    for line in lines:
-        for test_name, pattern in test_patterns.items():
-            match = re.search(pattern, line)
-            if match:
-                value = match.group(1)
-                extracted_info[test_name] = float(value)
-                numeric_values.append(float(value))
+    for test_name, pattern in test_patterns.items():
+        match = re.search(pattern, text)
+        if match:
+            value = match.group(1)
+            extracted_info[test_name] = float(value)
+            numeric_values.append(float(value))
     
     return extracted_info, numeric_values
 
 if __name__ == "__main__":
     # Testing with a sample file
-    pdf_path = 'sample_report.txt'  # Change this to the path of the sample report file
+    pdf_path = 'sample_report.pdf'  # Change this to the path of the sample report file
     extracted_info, numeric_values = parse_blood_test_report(pdf_path)
     print("Extracted Info:", extracted_info)
     print("Numeric Values:", numeric_values)
-
