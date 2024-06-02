@@ -1,11 +1,18 @@
 from crewai import Agent
-from utilities.web_scraper import search_articles
+from utils.web_scraper import search_articles
 from transformers import T5ForConditionalGeneration, T5Tokenizer
+from pydantic import Field
+import os
 
 class WebArticleSearcher(Agent):
-    def __init__(self):
-        self.tokenizer = T5Tokenizer.from_pretrained('t5-small')
-        self.model = T5ForConditionalGeneration.from_pretrained('t5-small')
+    tokenizer: T5Tokenizer = Field(default_factory=lambda: T5Tokenizer.from_pretrained('t5-small'))
+    model: T5ForConditionalGeneration = Field(default_factory=lambda: T5ForConditionalGeneration.from_pretrained('t5-small'))
+    role: str = "Web Article Searcher"
+    goal: str = "Find relevant articles based on identified health conditions"
+    backstory: str = "An AI agent trained to search the web for relevant medical articles."
+
+    def __init__(self, **kwargs):
+        super().__init__(openai_api_key=os.getenv('OPENAI_API_KEY'), **kwargs)
 
     def search_articles(self, conditions):
         articles = []
@@ -24,4 +31,3 @@ class WebArticleSearcher(Agent):
         return summary
 
 web_article_searcher = WebArticleSearcher()
-

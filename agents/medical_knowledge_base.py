@@ -1,26 +1,18 @@
 from crewai import Agent
 from transformers import T5ForConditionalGeneration, T5Tokenizer
-from utilities.data_processor import load_medical_knowledge
+from utils.data_processor import load_medical_knowledge
+from pydantic import Field
+import os
 
 class MedicalKnowledgeBase(Agent):
-    def __init__(self):
-        self.knowledge_base = load_medical_knowledge()
-        self.tokenizer = T5Tokenizer.from_pretrained('t5-small')
-        self.model = T5ForConditionalGeneration.from_pretrained('t5-small')
+    knowledge_base: dict = Field(default_factory=load_medical_knowledge)
+    tokenizer: T5Tokenizer = Field(default_factory=lambda: T5Tokenizer.from_pretrained('t5-small'))
+    model: T5ForConditionalGeneration = Field(default_factory=lambda: T5ForConditionalGeneration.from_pretrained('t5-small'))
+    role: str = "Medical Knowledge Base"
+    goal: str = "Provide medical insights based on analyzed blood test reports"
+    backstory: str = "An AI agent trained to offer medical insights and knowledge."
 
-    def analyze_conditions(self, abnormalities):
-        conditions = {}
-        for test, status in abnormalities.items():
-            condition = self.knowledge_base.get(test, {}).get(status, 'Unknown condition')
-            conditions[test] = condition
-        return conditions
-
-    def extract_information(self, text, question):
-        input_text = f'question: {question} context: {text}'
-        input_ids = self.tokenizer.encode(input_text, return_tensors='pt')
-        outputs = self.model.generate(input_ids)
-        answer = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return answer
+    def __init__(self, **kwargs):
+        super().__init__(openai_api_key=os.getenv('OPENAI_API_KEY'), **kwargs)
 
 medical_knowledge_base = MedicalKnowledgeBase()
-

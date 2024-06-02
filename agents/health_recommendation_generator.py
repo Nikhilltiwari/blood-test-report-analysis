@@ -1,11 +1,18 @@
 from crewai import Agent
-from utilities.data_processor import generate_recommendations
+from utils.data_processor import generate_recommendations
 from transformers import T5ForConditionalGeneration, T5Tokenizer
+from pydantic import Field
+import os
 
 class HealthRecommendationGenerator(Agent):
-    def __init__(self):
-        self.tokenizer = T5Tokenizer.from_pretrained('t5-small')
-        self.model = T5ForConditionalGeneration.from_pretrained('t5-small')
+    tokenizer: T5Tokenizer = Field(default_factory=lambda: T5Tokenizer.from_pretrained('t5-small'))
+    model: T5ForConditionalGeneration = Field(default_factory=lambda: T5ForConditionalGeneration.from_pretrained('t5-small'))
+    role: str = "Health Recommendation Generator"
+    goal: str = "Generate health recommendations based on blood test analysis and relevant articles"
+    backstory: str = "An AI agent trained to provide personalized health recommendations."
+
+    def __init__(self, **kwargs):
+        super().__init__(openai_api_key=os.getenv('OPENAI_API_KEY'), **kwargs)
 
     def generate_recommendations(self, conditions, articles):
         recommendations = generate_recommendations(conditions, articles)
@@ -21,4 +28,3 @@ class HealthRecommendationGenerator(Agent):
         return summary
 
 health_recommendation_generator = HealthRecommendationGenerator()
-

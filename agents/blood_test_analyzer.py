@@ -1,16 +1,22 @@
 from crewai import Agent
-from utilities.parser import parse_blood_test_report
-from utilities.data_processor import identify_abnormalities
+from utils.parser import parse_blood_test_report
+from utils.data_processor import identify_abnormalities
 from sklearn.ensemble import IsolationForest
 import numpy as np
+from pydantic import Field
+import os
 
 class BloodTestAnalyzer(Agent):
-    def __init__(self):
-        self.model = IsolationForest(contamination=0.1)
+    model: IsolationForest = Field(default_factory=lambda: IsolationForest(contamination=0.1))
+    role: str = "Blood Test Analyzer"
+    goal: str = "Analyze blood test reports and identify abnormalities"
+    backstory: str = "An AI agent trained to analyze blood test reports and detect anomalies."
+
+    def __init__(self, **kwargs):
+        super().__init__(openai_api_key=os.getenv('OPENAI_API_KEY'), **kwargs)
         self.model.fit(self.load_training_data())
 
     def load_training_data(self):
-        # Load historical blood test data for training the model
         return np.array([[15.0, 45.0, 4.5], [14.0, 44.0, 4.6]])
 
     def parse_blood_test(self, pdf_path):
@@ -26,3 +32,4 @@ class BloodTestAnalyzer(Agent):
         return abnormalities
 
 blood_test_analyzer = BloodTestAnalyzer()
+
