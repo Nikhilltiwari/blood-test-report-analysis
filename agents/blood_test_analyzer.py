@@ -17,15 +17,18 @@ class BloodTestAnalyzer(Agent):
         self.model.fit(self.load_training_data())
 
     def load_training_data(self):
+        # Ensure the training data has the same number of features as the expected input
         return np.array([[15.0, 45.0, 4.5], [14.0, 44.0, 4.6]])
 
     def parse_blood_test(self, pdf_path):
         return parse_blood_test_report(pdf_path)
 
     def identify_abnormalities(self, extracted_info):
+        # Only consider numeric values
         numeric_values = [value for value in extracted_info.values() if isinstance(value, (int, float))]
-        if not numeric_values:
-            return {}
+        # Ensure the input data has the same number of features as the training data
+        if len(numeric_values) != 3:
+            raise ValueError(f"Expected 3 features, but got {len(numeric_values)} features.")
         is_anomaly = self.model.predict([numeric_values])[0]
         abnormalities = {}
         if is_anomaly == -1:
