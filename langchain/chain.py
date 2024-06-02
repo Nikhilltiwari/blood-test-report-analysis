@@ -44,3 +44,4 @@ health_assistant_chain = SequentialChain(
     input_keys=["pdf_path"],
     output_keys=["recommendations"]
 )
+

@@ -23,3 +23,4 @@ class MedicalKnowledgeBase(Agent):
         return answer
 
 medical_knowledge_base = MedicalKnowledgeBase()
+

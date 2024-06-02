@@ -24,3 +24,4 @@ class WebArticleSearcher(Agent):
         return summary
 
 web_article_searcher = WebArticleSearcher()
+

@@ -21,3 +21,4 @@ class HealthRecommendationGenerator(Agent):
         return summary
 
 health_recommendation_generator = HealthRecommendationGenerator()
+
