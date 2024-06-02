@@ -1,38 +1,41 @@
-# models/health_assistant.py
-from agents.blood_test_analyzer import BloodTestAnalyzer
-from agents.medical_knowledge_base import MedicalKnowledgeBase
-from agents.web_article_searcher import WebArticleSearcher
-from agents.health_recommendation_generator import HealthRecommendationGenerator
+#from agents.blood_test_analyzer import blood_test_analyzer
+from agents.medical_knowledge_base import medical_knowledge_base
+from agents.web_article_searcher import web_article_searcher
+from agents.health_recommendation_generator import health_recommendation_generator
+from langchain.chains import SequentialChain, LLMChain
 
-class HealthAssistant:
-    def __init__(self):
-        self.analyzer = BloodTestAnalyzer()
-        self.knowledge_base = MedicalKnowledgeBase()
-        self.searcher = WebArticleSearcher()
-        self.generator = HealthRecommendationGenerator()
+# Define the LangChain chains
+blood_test_analyzer_chain = LLMChain(
+    llm=blood_test_analyzer,
+    prompt="Analyze the blood test report and extract relevant information."
+)
 
-    def process_blood_test(self, blood_test_report):
-        # Step 1: Analyze the blood test report
-        extracted_info = self.analyzer.parse_blood_test(blood_test_report)
-        abnormalities = self.analyzer.identify_abnormalities(extracted_info)
+medical_knowledge_base_chain = LLMChain(
+    llm=medical_knowledge_base,
+    prompt="Analyze the abnormalities and identify relevant health conditions."
+)
 
-        # Step 2: Identify health conditions
-        conditions = self.knowledge_base.analyze_conditions(abnormalities)
+web_article_searcher_chain = LLMChain(
+    llm=web_article_searcher,
+    prompt="Search for relevant articles based on the identified health conditions."
+)
 
-        # Step 3: Search for relevant articles
-        articles = self.searcher.search_articles(conditions)
+health_recommendation_generator_chain = LLMChain(
+    llm=health_recommendation_generator,
+    prompt="Generate personalized health recommendations based on the conditions and articles."
+)
 
-        # Step 4: Generate health recommendations
-        recommendations = self.generator.generate_recommendations(conditions, articles)
-        
-        return {
-            "summary": extracted_info,
-            "abnormalities": abnormalities,
-            "conditions": conditions,
-            "articles": articles,
-            "recommendations": recommendations
-        }
-# models/health_assistant.py
+health_assistant_chain = SequentialChain(
+    chains=[
+        blood_test_analyzer_chain,
+        medical_knowledge_base_chain,
+        web_article_searcher_chain,
+        health_recommendation_generator_chain
+    ],
+    input_keys=["pdf_path"],
+    output_keys=["recommendations"]
+)
+
 from langchain.chains import health_assistant_chain
 
 class HealthAssistant:
