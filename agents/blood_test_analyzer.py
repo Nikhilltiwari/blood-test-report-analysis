@@ -23,13 +23,15 @@ class BloodTestAnalyzer(Agent):
         return parse_blood_test_report(pdf_path)
 
     def identify_abnormalities(self, extracted_info):
-        values = list(extracted_info.values())
-        is_anomaly = self.model.predict([values])[0]
+        numeric_values = [value for value in extracted_info.values() if isinstance(value, (int, float))]
+        if not numeric_values:
+            return {}
+        is_anomaly = self.model.predict([numeric_values])[0]
         abnormalities = {}
         if is_anomaly == -1:
             for test, value in extracted_info.items():
-                abnormalities[test] = 'Anomalous'
+                if isinstance(value, (int, float)):
+                    abnormalities[test] = 'Anomalous'
         return abnormalities
 
 blood_test_analyzer = BloodTestAnalyzer()
-
