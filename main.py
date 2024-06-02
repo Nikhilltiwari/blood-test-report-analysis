@@ -1,14 +1,14 @@
-import sys
-import os
 
-# Add the project directory to the sys.path
-project_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(project_dir)
+import os
+from dotenv import load_dotenv
+
+# Loading environment variables from .env file
+load_dotenv()
 
 from models.health_assistant import HealthAssistant
 
 def main():
-    pdf_path = "path/to/sample_report.pdf"  # Update with the actual path to your sample report
+    pdf_path = "C:/Users/nikhl/Downloads/sample report.pdf"  
     
     assistant = HealthAssistant()
     result = assistant.process_blood_test(pdf_path)
