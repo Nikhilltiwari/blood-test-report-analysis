@@ -1,4 +1,4 @@
-import fitz  # PyMuPDF
+import fitz  
 
 def parse_blood_test_report(pdf_path):
     # Open the PDF file
@@ -8,7 +8,7 @@ def parse_blood_test_report(pdf_path):
         page = document.load_page(page_num)
         text += page.get_text()
     
-    # Simple text parsing logic 
+    # Simple text parsing logic
     extracted_info = {}
     lines = text.split('\n')
     for line in lines:
@@ -25,4 +25,3 @@ def parse_blood_test_report(pdf_path):
                 extracted_info[key] = None
     
     return extracted_info
-
