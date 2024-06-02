@@ -32,3 +32,14 @@ class HealthAssistant:
             "articles": articles,
             "recommendations": recommendations
         }
+# models/health_assistant.py
+from langchain.chains import health_assistant_chain
+
+class HealthAssistant:
+    def __init__(self):
+        self.chain = health_assistant_chain
+
+    def process_blood_test(self, pdf_path):
+        # Execute the chain with the given input
+        result = self.chain.run({"pdf_path": pdf_path})
+        return result
