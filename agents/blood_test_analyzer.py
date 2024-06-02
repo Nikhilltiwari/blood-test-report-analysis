@@ -41,3 +41,5 @@ class BloodTestAnalyzer(Agent):
         return abnormalities
 
 blood_test_analyzer = BloodTestAnalyzer()
+
+

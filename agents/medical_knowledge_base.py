@@ -25,3 +25,4 @@ class MedicalKnowledgeBase(Agent):
         return conditions
 
 medical_knowledge_base = MedicalKnowledgeBase()
+
