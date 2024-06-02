@@ -8,12 +8,21 @@ def parse_blood_test_report(pdf_path):
         page = document.load_page(page_num)
         text += page.get_text()
     
-    # Simple text parsing logic (can be improved)
+    # Simple text parsing logic 
     extracted_info = {}
     lines = text.split('\n')
     for line in lines:
         if ':' in line:
             key, value = line.split(':', 1)
-            extracted_info[key.strip()] = float(value.strip())
+            key = key.strip()
+            value = value.strip()
+            if value:
+                try:
+                    extracted_info[key] = float(value)
+                except ValueError:
+                    extracted_info[key] = value
+            else:
+                extracted_info[key] = None
     
     return extracted_info
+
