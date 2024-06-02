@@ -15,4 +15,13 @@ class MedicalKnowledgeBase(Agent):
     def __init__(self, **kwargs):
         super().__init__(openai_api_key=os.getenv('OPENAI_API_KEY'), **kwargs)
 
+    def analyze_conditions(self, abnormalities):
+        # Analyze the identified abnormalities to determine potential health conditions
+        conditions = {}
+        for test, result in abnormalities.items():
+            # Use knowledge base and model to analyze conditions
+            condition_description = self.knowledge_base.get(test, "Unknown condition")
+            conditions[test] = condition_description
+        return conditions
+
 medical_knowledge_base = MedicalKnowledgeBase()

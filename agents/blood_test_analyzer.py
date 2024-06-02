@@ -26,9 +26,12 @@ class BloodTestAnalyzer(Agent):
     def identify_abnormalities(self, extracted_info):
         # Only consider numeric values
         numeric_values = [value for value in extracted_info.values() if isinstance(value, (int, float))]
+        # Log numeric values for debugging purposes
+        print("Numeric Values:", numeric_values)
         # Ensure the input data has the same number of features as the training data
         if len(numeric_values) != 3:
-            raise ValueError(f"Expected 3 features, but got {len(numeric_values)} features.")
+            print(f"Warning: Expected 3 features, but got {len(numeric_values)} features. Extracted info: {extracted_info}")
+            return {"error": "Incorrect number of features extracted from the blood test report."}
         is_anomaly = self.model.predict([numeric_values])[0]
         abnormalities = {}
         if is_anomaly == -1:
