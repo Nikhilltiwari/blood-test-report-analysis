@@ -1,3 +1,4 @@
+# models/health_assistant.py
 from agents.blood_test_analyzer import blood_test_analyzer
 from agents.medical_knowledge_base import medical_knowledge_base
 from agents.web_article_searcher import web_article_searcher
@@ -12,7 +13,7 @@ class HealthAssistant:
 
     def process_blood_test(self, pdf_path):
         # Step 1: Analyze the blood test report
-        extracted_info = self.analyzer.parse_blood_test(pdf_path)
+        extracted_info, numeric_values = self.analyzer.parse_blood_test(pdf_path)
         abnormalities = self.analyzer.identify_abnormalities(extracted_info)
 
         # Step 2: Identify health conditions
