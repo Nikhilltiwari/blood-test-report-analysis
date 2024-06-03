@@ -1,5 +1,5 @@
 def identify_abnormalities(extracted_info):
-    # Example abnormality detection logic (customize as needed)
+    # Example abnormality detection logic 
     abnormalities = {}
     for test, value in extracted_info.items():
         if value < 10 or value > 100:  # Example threshold values

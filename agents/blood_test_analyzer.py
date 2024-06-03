@@ -26,7 +26,7 @@ class BloodTestAnalyzer(Agent):
 blood_test_analyzer = BloodTestAnalyzer()
 
 if __name__ == "__main__":
-    pdf_path = "sample_report.txt"  # Change this to the path of the sample report file
+    pdf_path = "C:/Users/nikhl/Downloads/sample report.pdf" 
     extracted_info, numeric_values = blood_test_analyzer.parse_blood_test(pdf_path)
     print("Extracted Info:", extracted_info)
     print("Numeric Values:", numeric_values)

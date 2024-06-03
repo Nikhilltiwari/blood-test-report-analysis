@@ -57,7 +57,7 @@ def parse_blood_test_report(pdf_path: str) -> Tuple[Dict[str, Any], List[float]]
 
 if __name__ == "__main__":
     # Testing with a sample file
-    pdf_path = 'sample_report.pdf'  # Change this to the path of the sample report file
+    pdf_path = 'C:/Users/nikhl/Downloads/sample report.pdf'  
     extracted_info, numeric_values = parse_blood_test_report(pdf_path)
     print("Extracted Info:", extracted_info)
     print("Numeric Values:", numeric_values)
